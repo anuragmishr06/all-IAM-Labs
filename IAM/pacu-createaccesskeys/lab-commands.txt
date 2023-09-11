@@ -1,0 +1,50 @@
+aws sts get-caller-identity --profile pacu
+
+aws s3 ls --profile pacu
+
+aws iam list-attached-user-policies --user-name pacu --profile pacu
+aws iam get-policy --policy-arn arn:aws:iam::159030386263:policy/pacu-user-policy --profile pacu
+aws iam get-policy-version --policy-arn arn:aws:iam::159030386263:policy/pacu-user-policy --version-id v1 --profile pacu
+
+aws iam list-users --profile pacu
+
+aws iam get-user --user-name sqs-read-user --profile pacu
+aws iam list-attached-user-policies --user-name sqs-read-user --profile pacu
+aws iam get-policy --policy-arn arn:aws:iam::159030386263:policy/sqs-read-user-policy --profile pacu
+aws iam get-policy-version --policy-arn arn:aws:iam::159030386263:policy/sqs-read-user-policy --version-id v1 --profile pacu
+
+aws iam get-user --user-name configurator --profile pacu
+aws iam list-attached-user-policies --user-name configurator --profile pacu 
+aws iam get-policy --policy-arn arn:aws:iam::159030386263:policy/configurator-policy --profile pacu
+aws iam get-policy-version --policy-arn arn:aws:iam::159030386263:policy/configurator-policy --version-id v1 --profile pacu
+
+
+aws iam create-access-key --user-name configurator --profile pacu
+
+aws configure --profile configurator
+aws sts get-caller-identity --profile configurator
+aws s3 ls --profile configurator
+
+
+
+-------------------------------------
+
+delete the access key which is created by the default user:
+
+aws iam delete-access-key --user-name configurator --access-key-id ACCESS_KEY_ID_HERE
+
+then delete the infra - terraform destroy --auto-approve
+--------------------------------------
+PACU commands:
+
+pacu
+
+new session = pacu
+
+set_keys - to set aws access keys and secret access keys
+whoami - to know about user
+run iam__enum_permissions  -- to enumerate user permissions
+run iam__enum_users_roles_policies_groups
+
+run iam__privesc_scan -- for priv escalation
+
