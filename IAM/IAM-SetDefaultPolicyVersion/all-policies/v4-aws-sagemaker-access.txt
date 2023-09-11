@@ -1,0 +1,29 @@
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Effect": "Allow",
+            "Action": [
+                "sagemaker:CreateNotebookInstance",
+                "sagemaker:DeleteNotebookInstance",
+                "sagemaker:ListNotebookInstances",
+                "sagemaker:StartNotebookInstance",
+                "sagemaker:StopNotebookInstance",
+                "sagemaker:CreateTrainingJob",
+                "sagemaker:DescribeTrainingJob",
+                "sagemaker:ListTrainingJobs",
+                "sagemaker:CreateModel",
+                "sagemaker:DescribeModel",
+                "sagemaker:ListModels",
+                "sagemaker:CreateEndpointConfig",
+                "sagemaker:DescribeEndpointConfig",
+                "sagemaker:ListEndpointConfigs",
+                "sagemaker:CreateEndpoint",
+                "sagemaker:DescribeEndpoint",
+                "sagemaker:ListEndpoints"
+            ],
+            "Resource": "*"
+        }
+    ]
+}
+
