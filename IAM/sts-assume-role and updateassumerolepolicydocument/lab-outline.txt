@@ -1,0 +1,118 @@
+1. create a customer-managed-policy called engineer-user-policy with the following permissions:
+{
+	"Version": "2012-10-17",
+	"Statement": [{
+		"Effect": "Allow",
+		"Action": [
+			"iam:ListAttachedUserPolicies",
+			"iam:GetPolicy",
+			"iam:GetPolicyVersion",
+			"iam:ListUsers",
+			"iam:GetUserPolicy",
+			"iam:GetUser",
+			"iam:ListRoles",
+			"iam:GetRole",
+			"iam:GetRolePolicy",
+			"iam:ListAttachedRolePolicies",
+			"iam:ListUserPolicies"
+		],
+		"Resource": [
+			"*"
+		]
+	}]
+}
+
+2. Create a customer managed policy called - admin-role-policy with the following permissions:
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Effect": "Allow",
+            "Action": "*",
+            "Resource": "*"
+        }
+    ]
+}
+
+3. Create a customer managed policy called victim-role-policy with the following permissions:
+
+{
+    "Statement": [
+        {
+            "Action": [
+                "iam:UpdateAssumeRolePolicy",
+                "sts:AssumeRole"
+            ],
+            "Effect": "Allow",
+            "Resource": "*"
+        }
+    ],
+    "Version": "2012-10-17"
+}
+
+4. create a IAM user called engineer
+5. Attach engineer-user-policy to the user engineer.
+6.  create an inline user policy for the user engineer called sts-assume-role-inline-policy with the following permissions:
+{
+ "Version": "2012-10-17",
+ "Statement": [
+  {
+   "Effect": "Allow",
+   "Action": "sts:AssumeRole",
+   "Resource": "*"
+  }
+ ]
+}
+
+7. create a IAM user called iam-moderator
+
+
+8. create a IAM role called - admin-role and attach this trust relationship:
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Sid": "",
+            "Effect": "Allow",
+            "Principal": {
+                "AWS": "arn:aws:iam::159030386263:user/iam-moderator"
+            },
+            "Action": "sts:AssumeRole"
+        }
+    ]
+}
+
+9. Attach the admin-role-policy to the admin-role
+
+10. Create a customer managed policy called - iam-moderator-assume-admin-role with the following permissions:
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Effect": "Allow",
+            "Action": "sts:AssumeRole",
+            "Resource": "arn:aws:iam::159030386263:role/admin-role"
+        }
+    ]
+}
+
+11. Attach the IAM policy called iam-moderator-assume-role to the user iam-moderator
+
+12. Create a IAM role called victim-role and attach this trust relationship:
+
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Sid": "",
+            "Effect": "Allow",
+            "Principal": {
+                "AWS": "arn:aws:iam::159030386263:user/engineer"
+            },
+            "Action": "sts:AssumeRole"
+        }
+    ]
+}
+
+13. Attach the victim-role-policy to the victim-role
+14. Create access keys for the user engineer
