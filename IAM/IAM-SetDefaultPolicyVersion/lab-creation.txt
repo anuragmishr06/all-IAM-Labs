@@ -1,0 +1,162 @@
+aws iam create-user --user-name devops-engineer
+
+aws iam create-policy --policy-name devops-engineer-policy --policy-document '{"Version": "2012-10-17","Statement": [{"Effect": "Allow","Action": ["codepipeline:ListPipelines","codepipeline:GetPipeline","codepipeline:StartPipelineExecution","codepipeline:StopPipelineExecution","codepipeline:ListPipelineExecutions","codebuild:CreateProject","codebuild:BatchGetBuilds","codebuild:StartBuild","codebuild:StopBuild","codebuild:ListBuilds","codebuild:ListProjects","codebuild:CreateWebhook"],"Resource": "*"}]}'
+
+
+aws iam attach-user-policy --user-name devops-engineer --policy-arn arn:aws:iam::YOUR_ACCOUNT_ID:policy/devops-engineer-policy
+
+aws iam create-policy-version --policy-arn arn:aws:iam::YOUR_ACCOUNT_ID:policy/devops-engineer-policy --policy-document '{"Version": "2012-10-17","Statement": [{"Effect": "Allow","Action": ["sns:Publish","sns:Subscribe","sns:ListTopics","sns:ListSubscriptions","sns:GetTopicAttributes","sns:GetSubscriptionAttributes"],"Resource": "*"}]}' --set-as-default
+
+aws iam create-policy-version --policy-arn arn:aws:iam::YOUR_ACCOUNT_ID:policy/devops-engineer-policy --policy-document '{"Version": "2012-10-17","Statement": [{"Effect": "Allow","Action": ["iam:ListAttachedUserPolicies","iam:GetPolicy","iam:GetPolicyVersion","iam:ListPolicyVersions","iam:SetDefaultPolicyVersion","s3:ListBucket","s3:GetObject"],"Resource": "*"}]}' --set-as-default
+
+aws iam create-policy-version --policy-arn arn:aws:iam::YOUR_ACCOUNT_ID:policy/devops-engineer-policy --policy-document '{"Version": "2012-10-17","Statement": [{"Effect": "Allow","Action": ["sagemaker:CreateNotebookInstance","sagemaker:DeleteNotebookInstance","sagemaker:ListNotebookInstances","sagemaker:StartNotebookInstance","sagemaker:StopNotebookInstance","sagemaker:CreateTrainingJob","sagemaker:DescribeTrainingJob","sagemaker:ListTrainingJobs","sagemaker:CreateModel","sagemaker:DescribeModel","sagemaker:ListModels","sagemaker:CreateEndpointConfig","sagemaker:DescribeEndpointConfig","sagemaker:ListEndpointConfigs","sagemaker:CreateEndpoint","sagemaker:DescribeEndpoint","sagemaker:ListEndpoints"],"Resource": "*"}]}' --no-set-as-default
+
+aws iam create-policy-version --policy-arn arn:aws:iam::YOUR_ACCOUNT_ID:policy/devops-engineer-policy --policy-document '{"Version": "2012-10-17","Statement": [{"Effect": "Allow","Action": "*","Resource": "*"}]}' --no-set-as-default
+
+
+aws iam create-access-key --user-name devops-engineer
+
+
+---------------------------------------------------------
+delete the policy versions:
+
+aws iam delete-policy-version --policy-arn arn:aws:iam::YOUR_ACCOUNT_ID:policy/devops-engineer-policy --version-id VERSION_ID
+
+delete the policy:
+aws iam delete-policy --policy-arn arn:aws:iam::YOUR_ACCOUNT_ID:policy/devops-engineer-policy
+
+detach the policy:
+
+aws iam detach-user-policy --user-name devops-engineer --policy-arn arn:aws:iam::YOUR_ACCOUNT_ID:policy/devops-engineer-policy
+
+delete the access keys:
+aws iam delete-access-key --user-name devops-engineer --access-key-id ACCESS_KEY_ID
+
+
+delete the user:
+
+aws iam delete-user --user-name devops-engineer
+
+
+
+------------------------------------------------
+
+automated the above commands creation through script:
+
+Create the script:
+nano run_aws_commands.sh
+
+Paste the below script:
+
+----
+
+#!/bin/bash
+
+# Function to execute a command and display command output
+execute_command() {
+    echo "Running: $1"
+    eval "$1"
+    if [ $? -eq 0 ]; then
+        echo "Command succeeded"
+    else
+        echo "Command failed"
+        exit 1
+    fi
+    echo ""
+}
+
+# AWS Account ID
+ACCOUNT_ID="YOUR_ACCOUNT_ID"
+
+# List of commands
+commands=(
+    "aws iam create-user --user-name devops-engineer"
+    "aws iam create-policy --policy-name devops-engineer-policy --policy-document '{\"Version\": \"2012-10-17\",\"Statement\": [{\"Effect\": \"Allow\",\"Action\": [\"codepipeline:ListPipelines\",\"codepipeline:GetPipeline\",\"codepipeline:StartPipelineExecution\",\"codepipeline:StopPipelineExecution\",\"codepipeline:ListPipelineExecutions\",\"codebuild:CreateProject\",\"codebuild:BatchGetBuilds\",\"codebuild:StartBuild\",\"codebuild:StopBuild\",\"codebuild:ListBuilds\",\"codebuild:ListProjects\",\"codebuild:CreateWebhook\"],\"Resource\": \"*\"}]}'"
+    "aws iam attach-user-policy --user-name devops-engineer --policy-arn arn:aws:iam::${ACCOUNT_ID}:policy/devops-engineer-policy"
+    "aws iam create-policy-version --policy-arn arn:aws:iam::${ACCOUNT_ID}:policy/devops-engineer-policy --policy-document '{\"Version\": \"2012-10-17\",\"Statement\": [{\"Effect\": \"Allow\",\"Action\": [\"sns:Publish\",\"sns:Subscribe\",\"sns:ListTopics\",\"sns:ListSubscriptions\",\"sns:GetTopicAttributes\",\"sns:GetSubscriptionAttributes\"],\"Resource\": \"*\"}]}' --set-as-default"
+    "aws iam create-policy-version --policy-arn arn:aws:iam::${ACCOUNT_ID}:policy/devops-engineer-policy --policy-document '{\"Version\": \"2012-10-17\",\"Statement\": [{\"Effect\": \"Allow\",\"Action\": [\"iam:ListAttachedUserPolicies\",\"iam:GetPolicy\",\"iam:GetPolicyVersion\",\"iam:ListPolicyVersions\",\"iam:SetDefaultPolicyVersion\",\"s3:ListBucket\",\"s3:GetObject\"],\"Resource\": \"*\"}]}' --set-as-default"
+    "aws iam create-policy-version --policy-arn arn:aws:iam::${ACCOUNT_ID}:policy/devops-engineer-policy --policy-document '{\"Version\": \"2012-10-17\",\"Statement\": [{\"Effect\": \"Allow\",\"Action\": [\"sagemaker:CreateNotebookInstance\",\"sagemaker:DeleteNotebookInstance\",\"sagemaker:ListNotebookInstances\",\"sagemaker:StartNotebookInstance\",\"sagemaker:StopNotebookInstance\",\"sagemaker:CreateTrainingJob\",\"sagemaker:DescribeTrainingJob\",\"sagemaker:ListTrainingJobs\",\"sagemaker:CreateModel\",\"sagemaker:DescribeModel\",\"sagemaker:ListModels\",\"sagemaker:CreateEndpointConfig\",\"sagemaker:DescribeEndpointConfig\",\"sagemaker:ListEndpointConfigs\",\"sagemaker:CreateEndpoint\",\"sagemaker:DescribeEndpoint\",\"sagemaker:ListEndpoints\"],\"Resource\": \"*\"}]}' --no-set-as-default"
+    "aws iam create-policy-version --policy-arn arn:aws:iam::${ACCOUNT_ID}:policy/devops-engineer-policy --policy-document '{\"Version\": \"2012-10-17\",\"Statement\": [{\"Effect\": \"Allow\",\"Action\": \"*\",\"Resource\": \"*\"}]}' --no-set-as-default"
+    "aws iam create-access-key --user-name devops-engineer"
+)
+
+# Loop through and execute each command
+for cmd in "${commands[@]}"; do
+    execute_command "$cmd"
+done
+
+----
+
+make it executable:
+
+chmod +x run_aws_commands.sh
+
+Run to get account id:
+ 
+aws sts get-caller-identity
+
+Replace the account id in the above script:
+
+nano run_aws_commands.sh
+
+Execute the script:
+./run_aws_commands.sh 
+
+-------------------------------------
+
+automate the deletion process:
+
+
+nano delete_infrastructure.sh
+
+
+
+
+
+#!/bin/bash
+
+# Function to execute a command and display command output
+execute_command() {
+    echo "Running: $1"
+    eval "$1"
+    if [ $? -eq 0 ]; then
+        echo "Command succeeded"
+    else
+        echo "Command failed"
+    fi
+    echo ""
+}
+
+# AWS Account ID and Access Key ID
+ACCOUNT_ID="YOUR_ACCOUNT_ID"
+ACCESS_KEY_ID="YOUR_ACCESS_KEY_ID"
+
+# List of commands to delete infrastructure
+delete_commands=(
+    "aws iam delete-policy-version --policy-arn arn:aws:iam::${ACCOUNT_ID}:policy/devops-engineer-policy --version-id v4"
+    "aws iam delete-policy-version --policy-arn arn:aws:iam::${ACCOUNT_ID}:policy/devops-engineer-policy --version-id v3"
+    "aws iam delete-policy-version --policy-arn arn:aws:iam::${ACCOUNT_ID}:policy/devops-engineer-policy --version-id v2"
+    "aws iam delete-policy-version --policy-arn arn:aws:iam::${ACCOUNT_ID}:policy/devops-engineer-policy --version-id v1"
+    "aws iam detach-user-policy --user-name devops-engineer --policy-arn arn:aws:iam::${ACCOUNT_ID}:policy/devops-engineer-policy"
+    "aws iam delete-policy --policy-arn arn:aws:iam::${ACCOUNT_ID}:policy/devops-engineer-policy"
+    "aws iam delete-access-key --user-name devops-engineer --access-key-id ${ACCESS_KEY_ID}"
+    "aws iam delete-user --user-name devops-engineer"
+)
+
+# Loop through and execute each delete command
+for delete_cmd in "${delete_commands[@]}"; do
+    execute_command "$delete_cmd"
+done
+
+
+
+chmod +x delete_infrastructure.sh
+
+aws sts get-caller-identity - copy account id
+
+cd .aws/credentials - copy the access key
+
+nano delete_infrastructure.sh
+
+./delete_infrastructure.sh
+-------------------------------------------
