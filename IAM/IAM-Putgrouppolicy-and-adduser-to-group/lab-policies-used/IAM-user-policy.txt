@@ -1,0 +1,19 @@
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Effect": "Allow",
+            "Action": [
+                "iam:ListAttachedUserPolicies",
+                "iam:GetPolicy",
+                "iam:GetPolicyVersion",
+                "iam:ListAttachedGroupPolicies",
+                "iam:ListGroups",
+                "iam:AddUserToGroup",
+                "iam:GetGroupPolicy",
+                "iam:GetGroup"
+            ],
+            "Resource": "*"
+        }
+    ]
+}
