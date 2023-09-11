@@ -1,0 +1,21 @@
+{
+	"Version": "2012-10-17",
+	"Statement": [{
+		"Effect": "Allow",
+		"Action": [
+			"codepipeline:ListPipelines",
+			"codepipeline:GetPipeline",
+			"codepipeline:StartPipelineExecution",
+			"codepipeline:StopPipelineExecution",
+			"codepipeline:ListPipelineExecutions",
+			"codebuild:CreateProject",
+			"codebuild:BatchGetBuilds",
+			"codebuild:StartBuild",
+			"codebuild:StopBuild",
+			"codebuild:ListBuilds",
+			"codebuild:ListProjects",
+			"codebuild:CreateWebhook"
+		],
+		"Resource": "*"
+	}]
+}
