@@ -1,6 +1,5 @@
 # IAM-SetDefaultPolicyVersion
 
-git clone https://github.com/anuragmishr06/IAM-SetDefaultPolicyVersion.git
 
 -----------------------------------------------------------------
 To deploy infra:
