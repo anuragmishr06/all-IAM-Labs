@@ -1,0 +1,16 @@
+{
+	"Version": "2012-10-17",
+	"Statement": [{
+		"Effect": "Allow",
+		"Action": [
+			"iam:ListAttachedUserPolicies",
+			"iam:GetPolicy",
+			"iam:GetPolicyVersion",
+			"iam:ListUsers",
+			"iam:CreateAccessKey",
+			"iam:GetUserPolicy",
+			"iam:GetUser"
+		],
+		"Resource": "*"
+	}]
+}
