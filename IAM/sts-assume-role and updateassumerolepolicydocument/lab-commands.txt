@@ -32,8 +32,8 @@ aws iam list-user-policies --user-name iam-moderator --profile engineer
 aws iam list-roles --profile engineer
 
 ---------------get-assume-role-policy-document---or-trust-relationship------------------------
-aws iam get-role --role-name victim-role --query 'Role.AssumeRolePolicyDocument' --output json
-aws iam get-role --role-name admin-role --query 'Role.AssumeRolePolicyDocument' --output json
+aws iam get-role --role-name victim-role --query 'Role.AssumeRolePolicyDocument' --output json --profile engineer
+aws iam get-role --role-name admin-role --query 'Role.AssumeRolePolicyDocument' --output json --profile engineer
 ---------------------------------enumerate-roles-------------------------------------------------------------
 
 aws iam list-attached-role-policies --role-name admin-role --profile engineer
