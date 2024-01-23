@@ -18,18 +18,24 @@ resource "aws_instance" "staging_server" {
   }
 }
 
+resource "random_string" "random_name" {
+  length  = 10
+  special = false
+  upper   = false
+}
+
 resource "aws_s3_bucket" "seasides_prod_bucket" {
-  bucket = "seasides-prod"
+  bucket = "seasides-prod-${random_string.random_name.result}"
   acl    = "private"
 }
 
 resource "aws_s3_bucket" "seasides_dev_bucket" {
-  bucket = "seasides-dev"
+  bucket = "seasides-dev-${random_string.random_name.result}"
   acl    = "private"
 }
 
 resource "aws_s3_bucket" "seasides_staging_bucket" {
-  bucket = "seasides-staging"
+  bucket = "seasides-staging-${random_string.random_name.result}"
   acl    = "private"
 }
 
@@ -66,14 +72,17 @@ resource "aws_db_instance" "prod_mysql_db" {
   engine              = "mysql"
   engine_version      = "5.7"
   instance_class      = "db.t2.micro"
-  identifier          = "prod-my-company-db"
+  identifier          = "seasides-corp-prod-db" # Updated database name
   username            = "admin"
   password            = "MySuperSecretPassword"
   parameter_group_name = "default.mysql5.7"
   skip_final_snapshot = true
 
   tags = {
-    Name = "prod-mysql-db"
+    Name = "seasides-corp-prod-db", # Updated database name in tags
+    Environment = "Production",
+    Application = "MyApp",
+    // Add other relevant tags as needed
   }
 }
 
